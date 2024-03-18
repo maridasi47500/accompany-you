@@ -1,0 +1,48 @@
+<ion-header>
+	  <ion-toolbar class="ios hydrated">
+		      <ion-title class="ios title-ios hydrated">Chanson</ion-title>
+		        </ion-toolbar>
+</ion-header>
+<ion-content>
+	  <ion-list lines="full">
+		      <form [formGroup]="songForm" (ngSubmit)="formSubmit()">
+								        <ion-item>
+										        <ion-label position="floating">Artist</ion-label>
+											        <ion-input formControlName="artist" type="text" required>
+													        </ion-input>
+														      </ion-item>
+			            <ion-item>
+					            <ion-label position="floating">Title</ion-label>
+						            <ion-input formControlName="title" type="text" required></ion-input>
+							          </ion-item>
+
+																					        <ion-row>
+																							        <ion-col>
+																									          <ion-button type="submit" color="primary" shape="full" expand="block">Ajouter la Chanson</ion-button>
+																										          </ion-col>
+																											        </ion-row>
+																												    </form>
+																												      </ion-list>
+
+																												        <ion-list class="ios list-ios hydrated">
+																														    <ion-list-header class="ios hydrated">
+																															         Chansons 
+																																      </ion-list-header>
+																																          <ion-item *ngFor="let song of Songs" class="user-list">
+																																		        <ion-label>
+																																				        <h5>
+																																						<ion-icon name="headset-outline"></ion-icon> {{song.artist}} - {{song.title}}
+																																							          </h5>
+																																											          </ion-label>
+																																												        <div class="item-note" item-end>
+																																														        <button ion-button clear [routerLink]="['/tabs/edit-song/', song.$key]">
+																																																          <ion-icon name="create" style="zoom:2.0"></ion-icon>
+																																																	          </button>
+																																																		          <button ion-button clear (click)="deleteSong(song.$key)">
+																																																				            <ion-icon name="trash" style="zoom:2.0"></ion-icon>
+																																																					            </button>
+																																																						          </div>
+																																																							      </ion-item>
+																																																							        </ion-list>
+
+</ion-content>

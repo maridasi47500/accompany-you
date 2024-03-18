@@ -20,15 +20,23 @@ const routes: Routes = [
         loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
       },
       {
+        path: 'song',
+        loadChildren: () => import('../song/song.module').then(m => m.SongPageModule)
+      },
+        {
+		    path: 'edit-song/:id',
+		        loadChildren: () => import('../edit-song/edit-song.module').then( m => m.EditSongPageModule)
+			  },
+      {
         path: '',
-        redirectTo: '/tabs/tab1',
+        redirectTo: '/tabs/song',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/tab1',
+    redirectTo: '/tabs/song',
     pathMatch: 'full'
   }
 ];
