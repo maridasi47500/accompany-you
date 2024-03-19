@@ -41,6 +41,9 @@
 																																																		          <button ion-button clear (click)="deleteSong(song.$key)">
 																																																				            <ion-icon name="trash" style="zoom:2.0"></ion-icon>
 																																																					            </button>
+																																														        <button ion-button clear [routerLink]="['/tabs/partition/', song.$key]">
+																																																          <ion-icon name="document-outline" style="zoom:2.0"></ion-icon>
+																																																	          </button>
 																																																						          </div>
 																																																							      </ion-item>
 																																																							        </ion-list>

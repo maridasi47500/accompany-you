@@ -2,6 +2,7 @@ import { Component,OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import {ActivatedRoute, RouterModule} from '@angular/router';
+import { SongService } from './../shared/song.service';
 import {
 	  AngularFireStorage,
 	    AngularFireUploadTask,
@@ -38,14 +39,47 @@ export class Tab1Page implements OnInit {
 	                           // File uploading status
 	                             isFileUploading: boolean;
 	                               isFileUploaded: boolean;
+				       myparam:string;
+				       mysong:any;
 	                                 private filesCollection: AngularFirestoreCollection<imgFile>;
+					 fetchSongs() {
+
+						                                                      this.songService
+
+												                                                                 .getSongList()
+
+																				                                                                  .valueChanges()
+
+																												                                                                         .subscribe((res) => {
+
+
+																																						    console.log(res);
+																																						                                                                                                                                                                                     });
+
+
+																																																												                }
 					    ngOnInit() {
 						            this.route.params.subscribe(params => {
-								                 console.log(params['brand']);
+								                 this.myparam=params['id'];
+								                 console.log(params['id']);
+										 if (this.myparam !== "all"){
+										 this.mysong=this.songService.getSong(this.myparam).valueChanges()
+
+										                                                                        .subscribe((res) => {
+
+
+																				   console.log(res);
+																				   this.mysong=res;
+
+
+																				            });
+										 this.songService.getSong(this.myparam);
+
+										 }
 										         });
 											     }
 	                                   constructor(
-	                                       private afs: AngularFirestore,
+	                                       private afs: AngularFirestore,private songService: SongService,
 	                                           private afStorage: AngularFireStorage,private route: ActivatedRoute
 	                                             ) {
 	                                                 this.isFileUploading = false;

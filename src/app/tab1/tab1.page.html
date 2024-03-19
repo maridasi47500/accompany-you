@@ -1,11 +1,15 @@
 <ion-header [translucent]="true">
 	  <ion-toolbar>
-		      <ion-title> Ionic Firebase File Upload Demo </ion-title>
+		      <ion-title> Partitions </ion-title>
 		        </ion-toolbar>
 </ion-header>
 <ion-content>
-	  <ion-card class="ion-text-center" *ngIf="!isFileUploading && !isFileUploaded">
+	  <ion-card class="ion-text-center" *ngIf="myparam == 'all'">
+			            <ion-card-title>Toutes les partitions ici</ion-card-title>
+	  </ion-card>
+	  <ion-card class="ion-text-center" *ngIf="myparam !== 'all' && !isFileUploading && !isFileUploaded">
 		      <ion-card-header>
+			      <ion-card-title>partitions de {{mysong.artist}} - {{mysong.title}}</ion-card-title>
 			            <ion-card-title>Choose Images to Upload</ion-card-title>
 				        </ion-card-header>
 					    <ion-card-content>
