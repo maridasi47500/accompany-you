@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import { SongService } from './../shared/song.service';
+import { PartitionService } from './../shared/partition.service';
+import { Partition } from './../shared/partition';
 import {
 	  AngularFireStorage,
 	    AngularFireUploadTask,
@@ -22,6 +24,18 @@ export interface imgFile {
 	      styleUrls: ['tab1.page.scss'],
 })
 export class Tab1Page implements OnInit {
+	makeid(length:any) {
+		    var result = '';
+		        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+			    var charactersLength = characters.length;
+			        let counter = 0;
+				    while (counter < length) {
+					          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+						        counter += 1;
+							    }
+							        return result;
+	}
+
 
 	// File upload task
 	   fileUploadTask: AngularFireUploadTask;
@@ -41,7 +55,25 @@ export class Tab1Page implements OnInit {
 	                               isFileUploaded: boolean;
 				       myparam:string;
 				       mysong:any;
+				       Songs: any = [];
+				       Partitions: any = [];
 	                                 private filesCollection: AngularFirestoreCollection<imgFile>;
+					 fetchPartitions() {
+
+						                                                      this.partitionService
+
+												                                                                 .getPartitionList()
+
+																				                                                                  .valueChanges()
+
+																												                                                                         .subscribe((res) => {
+
+
+																																						    console.log(res);
+																																						                                                                                                                                                                                     });
+
+
+																																																												                }
 					 fetchSongs() {
 
 						                                                      this.songService
@@ -62,7 +94,44 @@ export class Tab1Page implements OnInit {
 						            this.route.params.subscribe(params => {
 								                 this.myparam=params['id'];
 								                 console.log(params['id']);
-										 if (this.myparam !== "all"){
+											 //get all partition
+											 this.fetchPartitions();
+											                                                        let partitionRes = this.partitionService.getPartitionList();
+																		                                                           partitionRes.snapshotChanges().subscribe((res) => {
+																										                                                                            this.Partitions = [];
+																																			                                                                                   res.forEach((item) => {
+
+																																														              let a: any = item.payload.toJSON();
+
+																																															                         a['$key'] = item.key;
+																																																		 this.mysong=this.songService.getSong(a["song_id"]).valueChanges()
+
+																																																		                                                                                                                                                         .subscribe((res) => {
+
+
+																																																																						                                                                                                                                                                    console.log(res);
+																																															                         a['title'] = res.title;
+																																															                         a['artist'] = res.artist;
+
+
+																																																																																																														                                                                                                                                                                                   });
+																																																																																																																																				                                                                                    this.songService.getSong(this.myparam);
+																																																			 this.songService.getSong(a["song_id"]);
+
+																																																		console.log(a.song_id, this.myparam) ;
+																																																		 if(this.myparam !== "all" && a.song_id === this.myparam){
+
+
+																																																		                            this.Partitions.push(a as Partition);
+																																																		 }else if (this.myparam === "all"){
+																																																		                            this.Partitions.push(a as Partition);
+																																																		 }
+
+
+																																																					                                     });
+
+																																																									                                          });
+											 //get song name
 										 this.mysong=this.songService.getSong(this.myparam).valueChanges()
 
 										                                                                        .subscribe((res) => {
@@ -75,11 +144,10 @@ export class Tab1Page implements OnInit {
 																				            });
 										 this.songService.getSong(this.myparam);
 
-										 }
 										         });
 											     }
 	                                   constructor(
-	                                       private afs: AngularFirestore,private songService: SongService,
+	                                       private afs: AngularFirestore,private partitionService: PartitionService,private songService: SongService,
 	                                           private afStorage: AngularFireStorage,private route: ActivatedRoute
 	                                             ) {
 	                                                 this.isFileUploading = false;
@@ -100,6 +168,16 @@ export class Tab1Page implements OnInit {
 	                                                                                                             this.imgName = file.name;
 	                                                                                                                 // Storage path
 	                                                                                                                     const fileStoragePath = `filesStorage/${new Date().getTime()}_${file.name}`;
+															     this.partitionService
+
+															                                                       .createPartition({$key: this.makeid(20),song_id: this.myparam, filename: fileStoragePath.split("/")[1]})
+
+																					                                                                 .then((res) => {
+
+																														                                                                             console.log(res);
+
+
+																																																			                                                                                                               })
 	                                                                                                                         // Image reference
 	                                                                                                                             const imageRef = this.afStorage.ref(fileStoragePath);
 	                                                                                                                                 // File upload task

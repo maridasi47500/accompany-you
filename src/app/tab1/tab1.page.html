@@ -6,10 +6,15 @@
 <ion-content>
 	  <ion-card class="ion-text-center" *ngIf="myparam == 'all'">
 			            <ion-card-title>Toutes les partitions ici</ion-card-title>
+
 	  </ion-card>
-	  <ion-card class="ion-text-center" *ngIf="myparam !== 'all' && !isFileUploading && !isFileUploaded">
+	  <ion-card class="ion-text-center" *ngIf="myparam !== 'all'">
+			      <ion-card-title>Voir toutes les partitions de {{mysong.artist}} - {{mysong.title}}</ion-card-title>
+
+	  </ion-card>
+	  <ion-card class="ion-text-center" *ngIf="myparam !== 'all' && !isFileUploading">
 		      <ion-card-header>
-			      <ion-card-title>partitions de {{mysong.artist}} - {{mysong.title}}</ion-card-title>
+
 			            <ion-card-title>Choose Images to Upload</ion-card-title>
 				        </ion-card-header>
 					    <ion-card-content>
@@ -27,4 +32,32 @@
 														          File size: {{ snap.totalBytes | formatFileSize }} Data transfered: {{
 															      snap.bytesTransferred | formatFileSize }}
 															        </div>
+				    <ion-list>
+					    <ion-item *ngFor="let partition of Partitions" class="user-list">
+
+						                                                                                              <ion-label>
+
+																		                                                                                                                <h5>
+																																	<ion-icon name="headset-outline"></ion-icon> {{partition.filename}} {{partition.artist}} - {{partition.title}}
+																																																																							                                                                                                                                                                                                                                                                                                                                  </h5>
+
+																																																																																																															                                                                                                                                                                      </ion-label>
+
+																																																																																																																																			                                                                                                                                                                                <div class="item-note" item-end>
+
+
+																																																																																																																																																										<a clear download="myfavicon" href="https://firebasestorage.googleapis.com/v0/b/accompa-u.appspot.com/o/filesStorage%2F{{partition.filename}}?alt=media">
+
+
+																																																																																																																																																																																																																																                    <ion-icon name="download-outline" style="zoom:2.0"></ion-icon>
+
+
+																																																																																																																																																																																																																																		                          </a>
+
+
+																																																																																																																																																																																																																																					                                                                </div>
+
+
+																																																																																																																																																																																																																																													                                                                  </ion-item>
+				    </ion-list>
 </ion-content>
