@@ -44,6 +44,9 @@ export class Tab2Page implements OnInit,AfterViewInit {
 								                     }
 								                       this.changeButtonState("mute");
 								                       }
+										       playVideo(filename:any){
+											       this.videoElmt.src="https://firebasestorage.googleapis.com/v0/b/accompa-u.appspot.com/o/filesStorage%2F"+filename+"?alt=media";
+										       }
 										       alterVolume= (dir:any) => {
 											         this.checkVolume(dir);
 										       };
