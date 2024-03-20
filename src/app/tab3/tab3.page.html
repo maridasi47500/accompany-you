@@ -1,17 +1,78 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
-  </ion-toolbar>
+	  <ion-toolbar>
+		      <ion-title> Accompagnements </ion-title>
+		        </ion-toolbar>
 </ion-header>
+<ion-content>
+	  <ion-card class="ion-text-center" *ngIf="myparam == 'all'">
+			            <ion-card-title>Tous les accompagnements ici</ion-card-title>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+	  </ion-card>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+	  <ion-card class="ion-text-center" *ngIf="myparam !== 'all'">
+			      <ion-card-title>Voir tous les accompagnements de {{mysong.artist}} - {{mysong.title}}</ion-card-title>
+
+	  </ion-card>
+
+	  <ion-card class="ion-text-center" *ngIf="myparam !== 'all' && !isFileUploading">
+		      <ion-card-header>
+
+			            <ion-card-title>Choose Images to Upload</ion-card-title>
+				        </ion-card-header>
+					    <ion-card-content>
+						          <ion-button color="primary" size="medium">
+								          <input type="file" (change)="uploadImage($event.target.files)" />
+									        </ion-button>
+										    </ion-card-content>
+										      </ion-card>
+	   <ion-card class="ion-text-center" *ngIf="accompagnementLoaded && Accompagnements.length === 0">
+		                                                         <ion-card-title>Aucune accompagnement pour le moment</ion-card-title>
+
+									                                                                 </ion-card>
+										        <!-- File upload progress bar -->
+											  <div *ngIf="percentageVal | async as percentage">
+												      Progress: {{ percentage | number }}%
+												          <ion-progress-bar value="{{ percentage / 100 }}"></ion-progress-bar>
+													    </div>
+													      <div *ngIf="trackSnapshot | async as snap">
+														          File size: {{ snap.totalBytes | formatFileSize }} Data transfered: {{
+															      snap.bytesTransferred | formatFileSize }}
+															        </div>
+				    <ion-list>
+					    <ion-item *ngFor="let accompagnement of Accompagnements" class="user-list">
+
+						                                                                                              <ion-label>
+
+																		                                                                                                                <h5>
+																																	<ion-icon name="headset-outline"></ion-icon> {{accompagnement.filename}} {{accompagnement.artist}} - {{accompagnement.title}}
+																																																																							                                                                                                                                                                                                                                                                                                                                  </h5>
+
+																																																																																																															                                                                                                                                                                      </ion-label>
+
+																																																																																																																																			                                                                                                                                                                                <div class="item-note" item-end>
+
+
+																																																																																																																																																										<a clear download="myfavicon" href="https://firebasestorage.googleapis.com/v0/b/accompa-u.appspot.com/o/filesStorage%2F{{accompagnement.filename}}?alt=media">
+
+
+																																																																																																																																																																																																																																                    <ion-icon name="download-outline" style="zoom:2.0"></ion-icon>
+
+
+																																																																																																																																																																																																																																		                          </a>
+
+																																																																																																																																																																																																																																					  <button ion-button clear (click)="deleteAccompagnement(accompagnement.$key)">
+
+																																																																																																																																																																																																																																						                                                                                                                                                                                                                                                                                                                                                          <ion-icon name="trash" style="zoom:2.0"></ion-icon>
+
+
+
+
+
+																																																																																																																																																																																																																																																																																	                  </button>
+
+																																																																																																																																																																																																																																					                                                                </div>
+
+
+																																																																																																																																																																																																																																													                                                                  </ion-item>
+				    </ion-list>
 </ion-content>

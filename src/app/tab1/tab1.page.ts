@@ -55,6 +55,7 @@ export class Tab1Page implements OnInit {
 	                               isFileUploaded: boolean;
 				       myparam:string;
 				       mysong:any;
+				       partitionLoaded:any;
 				       Songs: any = [];
 				       Partitions: any = [];
 	                                 private filesCollection: AngularFirestoreCollection<imgFile>;
@@ -70,10 +71,27 @@ export class Tab1Page implements OnInit {
 
 
 																																						    console.log(res);
+																																						    this.partitionLoaded=true;
 																																						                                                                                                                                                                                     });
 
 
+
 																																																												                }
+																																																														deletePartition(id: any) {
+
+
+																																																															                         console.log(id);
+
+
+																																																																		                              if (window.confirm('Do you really want to delete?')) {
+
+
+																																																																						                                                 this.partitionService.deletePartition(id);
+
+
+																																																																												                                                }
+
+																																																																																		                                                                                                                                     }
 					 fetchSongs() {
 
 						                                                      this.songService
@@ -159,7 +177,7 @@ export class Tab1Page implements OnInit {
 	                                                                     uploadImage(event: FileList) {
 	                                                                         const file: any = event.item(0);
 	                                                                             // Image validation
-	                                                                                 if (file.type.split('/')[0] !== 'image') {
+	                                                                                 if (file.type.split('/')[0] !== 'application' && file.type.split('/')[0] !== 'text') {
 	                                                                                       console.log('File type is not supported!');
 	                                                                                             return;
 	                                                                                                 }
