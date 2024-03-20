@@ -1,10 +1,11 @@
-import { Component,OnInit } from '@angular/core';
+import { Component,OnInit, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import { SongService } from './../shared/song.service';
-import { PartitionService } from './../shared/partition.service';
-import { Partition } from './../shared/partition';
+import { AccompagnementService } from './../shared/accompagnement.service';
+import { Accompagnement } from './../shared/accompagnement';
+import { ElementRef,Directive, Input, ViewChild} from '@angular/core';
 import {
 	  AngularFireStorage,
 	    AngularFireUploadTask,
@@ -19,11 +20,40 @@ export interface imgFile {
 	      size: number;
 }
 @Component({
-	  selector: 'app-tab1',
-	    templateUrl: 'tab1.page.html',
-	      styleUrls: ['tab1.page.scss'],
+	  selector: 'app-tab3',
+	    templateUrl: 'tab3.page.html',
+	      styleUrls: ['tab3.page.scss'],
 })
-export class Tab1Page implements OnInit {
+export class Tab3Page implements OnInit {
+        progressValue:any="0";
+	        @ViewChild('videoContainer') videocont: ElementRef;
+		        videoElmt: any;
+			        checkVolume(dir:any = null) {
+					                  if (dir) {
+								                                const currentVolume = Math.floor(this.videoElmt.volume * 10) / 10;
+												                                  if (dir === "+" && currentVolume < 1) {
+																	                                                  this.videoElmt.volume += 0.1;
+																							                                                      } else if (dir === "-" && currentVolume > 0) {
+																														                                                                        this.videoElmt.volume -= 0.1;
+																																							                                                                      }
+																																															      this.videoElmt.muted = currentVolume <= 0;
+
+																																															       }
+
+																																															          this.changeButtonState("mute");
+
+																																																     }
+
+																																																        playVideo(filename:any){
+
+																																																		           this.videoElmt.src="https://firebasestorage.googleapis.com/v0/b/accompa-u.appspot.com/o/filesStorage%2F"+filename+"?alt=media";
+																																																			                                                                                          }
+
+																																																														     alterVolume= (dir:any) => {
+
+																																																															                  this.checkVolume(dir);
+																																																																	                                                                                         };
+
 	makeid(length:any) {
 		    var result = '';
 		        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -55,15 +85,30 @@ export class Tab1Page implements OnInit {
 	                               isFileUploaded: boolean;
 				       myparam:string;
 				       mysong:any;
-				       partitionLoaded:any;
 				       Songs: any = [];
-				       Partitions: any = [];
+				       Accompagnements: any = [];
+				       accompagnementLoaded:any;
 	                                 private filesCollection: AngularFirestoreCollection<imgFile>;
-					 fetchPartitions() {
+					 deleteAccompagnement(id: any) {
 
-						                                                      this.partitionService
 
-												                                                                 .getPartitionList()
+						                          console.log(id);
+
+
+									                               if (window.confirm('Do you really want to delete?')) {
+
+
+													                                                  this.accompagnementService.deleteAccompagnement(id);
+
+
+																			                                                 }
+
+																									                                                                                                                                      }
+					 fetchAccompagnements() {
+
+						                                                      this.accompagnementService
+
+												                                                                 .getAccompagnementList()
 
 																				                                                                  .valueChanges()
 
@@ -71,27 +116,11 @@ export class Tab1Page implements OnInit {
 
 
 																																						    console.log(res);
-																																						    this.partitionLoaded=true;
+																																						    this.accompagnementLoaded=true;
 																																						                                                                                                                                                                                     });
 
 
-
 																																																												                }
-																																																														deletePartition(id: any) {
-
-
-																																																															                         console.log(id);
-
-
-																																																																		                              if (window.confirm('Do you really want to delete?')) {
-
-
-																																																																						                                                 this.partitionService.deletePartition(id);
-
-
-																																																																												                                                }
-
-																																																																																		                                                                                                                                     }
 					 fetchSongs() {
 
 						                                                      this.songService
@@ -112,17 +141,17 @@ export class Tab1Page implements OnInit {
 						            this.route.params.subscribe(params => {
 								                 this.myparam=params['id'];
 								                 console.log(params['id']);
-											 //get all partition
-											 this.fetchPartitions();
-											                                                        let partitionRes = this.partitionService.getPartitionList();
-																		                                                           partitionRes.snapshotChanges().subscribe((res) => {
-																										                                                                            this.Partitions = [];
+											 //get all accompagnement
+											 this.fetchAccompagnements();
+											                                                        let accompagnementRes = this.accompagnementService.getAccompagnementList();
+																		                                                           accompagnementRes.snapshotChanges().subscribe((res) => {
+																										                                                                            this.Accompagnements = [];
 																																			                                                                                   res.forEach((item) => {
 
 																																														              let a: any = item.payload.toJSON();
 
 																																															                         a['$key'] = item.key;
-																																																		 this.songService.getSong(a["song_id"]).valueChanges()
+																																																		 this.mysong=this.songService.getSong(a["song_id"]).valueChanges()
 
 																																																		                                                                                                                                                         .subscribe((res) => {
 
@@ -140,9 +169,9 @@ export class Tab1Page implements OnInit {
 																																																		 if(this.myparam !== "all" && a.song_id === this.myparam){
 
 
-																																																		                            this.Partitions.push(a as Partition);
+																																																		                            this.Accompagnements.push(a as Accompagnement);
 																																																		 }else if (this.myparam === "all"){
-																																																		                            this.Partitions.push(a as Partition);
+																																																		                            this.Accompagnements.push(a as Accompagnement);
 																																																		 }
 
 
@@ -165,19 +194,19 @@ export class Tab1Page implements OnInit {
 										         });
 											     }
 	                                   constructor(
-	                                       private afs: AngularFirestore,private partitionService: PartitionService,private songService: SongService,
+	                                       private afs: AngularFirestore,private accompagnementService: AccompagnementService,private songService: SongService,
 	                                           private afStorage: AngularFireStorage,private route: ActivatedRoute
 	                                             ) {
 	                                                 this.isFileUploading = false;
 	                                                     this.isFileUploaded = false;
 	                                                         // Define uploaded files collection
-	                                                             this.filesCollection = afs.collection<imgFile>('imagesCollection');
+	                                                             this.filesCollection = afs.collection<imgFile>('enregistrementsCollection');
 	                                                                 this.files = this.filesCollection.valueChanges();
 	                                                                   }
 	                                                                     uploadImage(event: FileList) {
 	                                                                         const file: any = event.item(0);
 	                                                                             // Image validation
-	                                                                                 if (file.type.split('/')[0] !== 'application' && file.type.split('/')[0] !== 'text') {
+	                                                                                 if (file.type.split('/')[0] !== 'audio' && file.type.split('/')[0] !== 'video') {
 	                                                                                       console.log('File type is not supported!');
 	                                                                                             return;
 	                                                                                                 }
@@ -186,9 +215,9 @@ export class Tab1Page implements OnInit {
 	                                                                                                             this.imgName = file.name;
 	                                                                                                                 // Storage path
 	                                                                                                                     const fileStoragePath = `filesStorage/${new Date().getTime()}_${file.name}`;
-															     this.partitionService
+															     this.accompagnementService
 
-															                                                       .createPartition({$key: this.makeid(20),song_id: this.myparam, filename: fileStoragePath.split("/")[1]})
+															                                                       .createAccompagnement({$key: this.makeid(20),song_id: this.myparam, filename: fileStoragePath.split("/")[1]})
 
 																					                                                                 .then((res) => {
 

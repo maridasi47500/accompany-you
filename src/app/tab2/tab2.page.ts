@@ -25,6 +25,9 @@ export interface imgFile {
 	      styleUrls: ['tab2.page.scss'],
 })
 export class Tab2Page implements OnInit,AfterViewInit {
+	        ionViewDidLeave(){
+			                this.stop()
+					        }
 	progressValue:any="0";
 	@ViewChild('videoContainer') videocont: ElementRef;
 	videoElmt: any;
@@ -137,6 +140,12 @@ export class Tab2Page implements OnInit,AfterViewInit {
 			                                       }
 	dataState:any="fake"; //visible or hidden
 	maxProgress:any=undefined;
+	playing(){
+		this.progressValue=this.videoElmt.currentTime;
+	}
+	loaded(){
+		this.maxProgress=this.videoElmt.duration;
+	}
 	makeid(length:any) {
 		    var result = '';
 		        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -234,7 +243,7 @@ export class Tab2Page implements OnInit,AfterViewInit {
 																																														              let a: any = item.payload.toJSON();
 
 																																															                         a['$key'] = item.key;
-																																																		 this.mysong=this.songService.getSong(a["song_id"]).valueChanges()
+																																																		 this.songService.getSong(a["song_id"]).valueChanges()
 
 																																																		                                                                                                                                                         .subscribe((res) => {
 
