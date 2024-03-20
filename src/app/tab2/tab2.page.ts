@@ -1,10 +1,11 @@
-import { Component,OnInit } from '@angular/core';
+import { Component,OnInit, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import { SongService } from './../shared/song.service';
 import { VideoService } from './../shared/video.service';
 import { Video } from './../shared/video';
+import { ElementRef,Directive, Input, ViewChild} from '@angular/core';
 import {
 	  AngularFireStorage,
 	    AngularFireUploadTask,
@@ -23,7 +24,116 @@ export interface imgFile {
 	    templateUrl: 'tab2.page.html',
 	      styleUrls: ['tab2.page.scss'],
 })
-export class Tab2Page implements OnInit {
+export class Tab2Page implements OnInit,AfterViewInit {
+	progressValue:any="0";
+	@ViewChild('videoContainer') videocont: ElementRef;
+	videoElmt: any;
+	checkVolume(dir:any = null) {
+		  if (dir) {
+			      const currentVolume = Math.floor(this.videoElmt.volume * 10) / 10;
+			          if (dir === "+" && currentVolume < 1) {
+					        this.videoElmt.volume += 0.1;
+						    } else if (dir === "-" && currentVolume > 0) {
+							          this.videoElmt.volume -= 0.1;
+								      }
+
+								        // If the volume has been turned off, also set it as muted
+								           // Note: can only do this with the custom control set as when the 'volumechange' event is raised,
+								               // there is no way to know if it was via a volume or a mute change
+								                   this.videoElmt.muted = currentVolume <= 0;
+								                     }
+								                       this.changeButtonState("mute");
+								                       }
+										       alterVolume= (dir:any) => {
+											         this.checkVolume(dir);
+										       };
+										       myprogress($ev:any){
+											       const pos =
+												           ($ev.pageX - $ev.target.offsetLeft - $ev.target.offsetParent.offsetLeft) /
+													       $ev.target.offsetWidth;
+											         this.videoElmt.currentTime = pos * this.videoElmt.duration;
+										       }								       
+	ngAfterViewInit(){
+		  console.log("hello there");
+		 this.videoElmt = this.videocont.nativeElement.getElementsByTagName('video')[0];
+		  console.log("heythere");
+		  console.log("heythere",this.videoElmt);
+	}
+	playpause(){
+		if (this.videoElmt.paused || this.videoElmt.ended) {
+			    this.videoElmt.play();
+			      } else {
+				          this.videoElmt.pause();
+					    }
+	}
+	stop(){
+		this.videoElmt.pause();
+		this.pause();
+		this.videoElmt.currentTime=0;
+		this.progressValue="0";
+		this.changeButtonState("playpause");
+	}
+	dataStatePlay:any="fake"; //visible or hidden
+	dataStateMute:any="fake"; //visible or hidden
+	videopaused:any=true;
+	videoended:any=false;
+	videomuted:any=false;
+	hey:any=[this.videopaused,this.videoended,this.videomuted];
+	pause(){
+		for (var i = 0;i<this.hey.length;i++){
+			this.hey[i]=false;
+		}
+		this.videopaused=true;
+		this.changeButtonState("playpause");
+	}
+	mute(){
+		for (var i = 0;i<this.hey.length;i++){
+			this.hey[i]=false;
+		}
+		this.videomuted=true;
+	}
+	ended(){
+		for (var i = 0;i<this.hey.length;i++){
+			this.hey[i]=false
+		}
+		this.videopaused=true;
+		this.videoended=true;
+	}
+	play(){
+		this.videopaused=false;
+		this.changeButtonState("playpause");
+	}
+	muteOk() {
+		  if (this.videoElmt.muted === true) {
+			    // Play/Pause button
+			             this.dataStateMute= "mute";
+				     this.videoElmt.muted=false;
+		  }else {
+			             this.dataStateMute= "unmute";
+				     this.videoElmt.muted=true;
+			                                       }
+	}
+	voldown(){
+		this.videoElmt.volume=this.videoElmt.volume - 5/100;
+	}
+	volinc(){
+		this.videoElmt.volume=this.videoElmt.volume + 5/100;
+	}
+	changeButtonState(type:any) {
+		  if (type === "playpause") {
+			    // Play/Pause button
+			       if (this.videopaused || this.videoended) {
+			             this.dataStatePlay= "play";
+			                 } else {
+			             this.dataStatePlay= "pause";
+			                           }
+			                             } else if (type === "mute") {
+			                                 // Mute button
+			             this.dataStateMute= this.videomuted ? "unmute" : "mute";
+			                                       }
+			                                       }
+	dataState:any="fake"; //visible or hidden
+	maxProgress:any=undefined;
 	makeid(length:any) {
 		    var result = '';
 		        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';

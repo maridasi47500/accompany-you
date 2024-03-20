@@ -77,4 +77,25 @@
 
 																																																																																																																																																																																																																																													                                                                  </ion-item>
 				    </ion-list>
+				    <figure #videoContainer data-fullscreen="false">
+					    		<video id="video" preload="metadata" poster="img/poster.jpg" src="https://firebasestorage.googleapis.com/v0/b/accompa-u.appspot.com/o/filesStorage%2F1710935918454_Te%20amare%20%20%20Miguel%20Bose%20y%20Laura%20Pausini.mp4?alt=media" (mute)="mute()" (ended)="ended()" (pause)="pause()" (play)="play()" (volumechange)="checkVolume()"  autoplay="autoplay"  autoplay playsinline style="pointer-events: none;">
+							</video>
+				    <div id="video-controls" class="controls" attr.data-state="{{dataState}}">
+					    <button id="playpause" type="button" attr.data-state="{{dataStatePlay}}" (click)="playpause()">Play/Pause</button>
+					        <button id="stop" type="button" attr.data-state="stop" (click)="stop()">Stop</button>
+						  <div class="progress">
+							  <progress id="progress" value="{{progressValue}}" min="0" max="{{maxProgress}}" (click)="myprogress($event)">
+								            <span id="progress-bar"></span>
+									        </progress>
+										  </div>
+										  <button id="mute" type="button" attr.data-state="{{dataStateMute}}" (click)="muteOk()">Mute/Unmute</button>
+										      <button id="volinc" type="button" attr.data-state="volup" (click)="volinc()">Vol+</button>
+										        <button id="voldec" type="button" attr.data-state="voldown" (click)="voldown()">Vol-</button>
+											  <button id="fs" type="button" attr.data-state="go-fullscreen">Fullscreen</button>
+				    </div>
+				    <figcaption>
+					    			&copy; video tutorial | <a href="http://mango.blender.org">mango.blender.org</a>
+										</figcaption>
+											</figure>
+
 </ion-content>
